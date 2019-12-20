@@ -4,16 +4,20 @@
       <div class="avaterBox">
         <img src="../assets/logo.png" alt="picture" />
       </div>
-      <el-form label-width="0" class="loginForm">
+      <el-form :model="formLogin" label-width="0" class="loginForm">
         <el-form-item>
-            <el-input prefix-icon="iconfont icon-user"></el-input>
+          <el-input v-model="formLogin.username" prefix-icon="iconfont icon-user"></el-input>
         </el-form-item>
         <el-form-item>
-            <el-input prefix-icon="iconfont icon-password"></el-input>
+          <el-input
+            type="password"
+            v-model="formLogin.password"
+            prefix-icon="iconfont icon-password"
+          ></el-input>
         </el-form-item>
         <el-form-item class="btns">
-            <el-button type="primary">登录</el-button>
-            <el-button type="info">重置</el-button>
+          <el-button type="primary">登录</el-button>
+          <el-button type="info">重置</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -21,7 +25,16 @@
 </template>
 
 <script>
-
+export default {
+  data () {
+    return {
+      formLogin: {
+        username: 'asad',
+        password: '1234445'
+      }
+    }
+  }
+}
 </script>
 
 <style lang="less" scoped>
@@ -60,14 +73,14 @@
     }
   }
 }
-    .loginForm {
-        position: absolute;
-        bottom: 0;
-        padding: 0 20px;
-        width: 100%;
-        .btns{
-            display: flex;
-            justify-content: flex-end;
-        }
-    }
+.loginForm {
+  position: absolute;
+  bottom: 0;
+  padding: 0 20px;
+  width: 100%;
+  .btns {
+    display: flex;
+    justify-content: flex-end;
+  }
+}
 </style>
