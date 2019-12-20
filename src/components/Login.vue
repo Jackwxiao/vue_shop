@@ -5,7 +5,7 @@
         <img src="../assets/logo.png" alt="picture" />
       </div>
       <!-- 表单区域 -->
-      <el-form :model="formLogin" :rules="formLoginRules" label-width="0" class="loginForm">
+      <el-form ref="loginFormRef" :model="formLogin" :rules="formLoginRules" label-width="0" class="loginForm">
         <el-form-item prop="username">
           <el-input v-model="formLogin.username" prefix-icon="iconfont icon-user"></el-input>
         </el-form-item>
@@ -18,7 +18,7 @@
         </el-form-item>
         <el-form-item class="btns">
           <el-button type="primary">登录</el-button>
-          <el-button type="info">重置</el-button>
+          <el-button type="info" @click="restForm">重置</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -30,8 +30,8 @@ export default {
   data () {
     return {
       formLogin: {
-        username: 'asad',
-        password: '1234445'
+        username: '',
+        password: ''
       },
       // 表单验证对象
       formLoginRules: {
@@ -44,6 +44,11 @@ export default {
           { min: 6, max: 15, message: '长度在 6 到 15 个字符', trigger: 'blur' }
         ]
       }
+    }
+  },
+  methods: {
+    restForm () {
+      this.$refs.loginFormRef.resetFields()
     }
   }
 }
