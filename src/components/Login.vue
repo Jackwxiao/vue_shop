@@ -1,3 +1,4 @@
+/* eslint-disable */
 <template>
   <div class="loginWrapper">
     <div class="loginBox">
@@ -51,8 +52,12 @@ export default {
       this.$refs.loginFormRef.resetFields()
     },
     login () {
-      this.$refs.loginFormRef.validate((valid) => {
-        console.log(valid)
+      this.$refs.loginFormRef.validate(async valid => {
+        if (!valid) return
+        const { data: res } = await this.$http.post('login', this.formLogin)
+        console.log(res)
+        if (res.meta.atatus !== 200) return console.log('登录成功')
+        console.log('登录失败')
       })
     }
   }
