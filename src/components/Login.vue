@@ -31,8 +31,8 @@ export default {
   data () {
     return {
       formLogin: {
-        username: '',
-        password: ''
+        username: 'admin',
+        password: '123456'
       },
       // 表单验证对象
       formLoginRules: {
@@ -58,6 +58,9 @@ export default {
         console.log(res)
         if (res.meta.status !== 200) return this.$message.error('登录失败！')
         this.$message.success('登陆成功！')
+        // 登陆成功后客户端保存返回的 token 到sessionStorage 中，因为只需在网站打开期间生效
+        window.sessionStorage.setItem('token', res.data.token)
+        this.$router.push('/home') // 编程式导航跳转到后台主页
       })
     }
   }
