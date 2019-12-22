@@ -56,8 +56,8 @@ export default {
         if (!valid) return
         const { data: res } = await this.$http.post('login', this.formLogin)
         console.log(res)
-        if (res.meta.atatus !== 200) return console.log('登录成功')
-        console.log('登录失败')
+        if (res.meta.status !== 200) return this.$message.error('登录失败！')
+        this.$message.success('登陆成功！')
       })
     }
   }
