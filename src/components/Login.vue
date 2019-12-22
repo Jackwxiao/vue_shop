@@ -1,4 +1,3 @@
-/* eslint-disable */
 <template>
   <div class="loginWrapper">
     <div class="loginBox">
