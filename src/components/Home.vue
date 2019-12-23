@@ -9,7 +9,8 @@
     </el-header>
     <el-container>
       <el-aside width="200px">
-        <el-menu background-color="#1E1E2D" text-color="#fff" active-text-color="#ffd04b">
+        <el-menu background-color="#1E1E2D" text-color="#fff" active-text-color="#ffd04b"
+        unique-opened>
           <!-- 一级菜单 -->
           <el-submenu :index="item.id + ''" v-for="item in menulist" :key="item.id">
             <template slot="title">
@@ -92,6 +93,9 @@ export default {
 }
 .el-aside {
   background-color: #1e1e2d;
+  .el-menu{
+    border: none;
+  }
 }
 .el-main {
   background-color: #f2f3f8;
