@@ -2,7 +2,7 @@
   <div class="loginWrapper">
     <div class="loginBox">
       <div class="avaterBox">
-        <img src="../assets/logo.png" alt="picture" />
+        <img src="../assets/images/logo.png" alt="picture" />
       </div>
       <!-- 表单区域 -->
       <el-form ref="loginFormRef" :model="formLogin" :rules="formLoginRules" label-width="0" class="loginForm">
