@@ -8,9 +8,12 @@
       <el-button type="info" @click="logout">退出登录</el-button>
     </el-header>
     <el-container>
-      <el-aside width="200px">
+      <el-aside :width="isCollapse ? '64px' : '200px'">
+        <div class="collapse" @click="collapse">
+          <i class="iconfont icon-menu"></i>
+        </div>
         <el-menu background-color="#1E1E2D" text-color="#fff" active-text-color="#ffd04b"
-        unique-opened>
+        unique-opened :collapse="isCollapse" :collapse-transition="false">
           <!-- 一级菜单 -->
           <el-submenu :index="item.id + ''" v-for="item in menulist" :key="item.id">
             <template slot="title">
@@ -43,7 +46,9 @@ export default {
         '101': 'iconfont icon-shangpinguanli',
         '102': 'iconfont icon-dingdan',
         '145': 'iconfont icon-shuju'
-      }
+      },
+      // 侧边栏是否可折叠展开
+      isCollapse: false
     }
   },
   created(){
@@ -62,6 +67,10 @@ export default {
       console.log(res)
       if (res.meta.status !== 200) return this.$message.console.error('res.meta.msg')
       this.menulist = res.data
+    },
+    // 点击按钮切换折叠与展开
+    collapse(){
+      this.isCollapse = !this.isCollapse
     }
   }
 }
@@ -86,8 +95,8 @@ export default {
       margin-left: 10px;
     }
     > img {
-      width: 60px;
-      height: 60px;
+      width: 64px;
+      height: 64px;
     }
   }
 }
@@ -95,6 +104,13 @@ export default {
   background-color: #1e1e2d;
   .el-menu{
     border: none;
+  }
+  .collapse{
+    background-color: #F0D43A;
+    color: #f2f3f8;
+    text-align: center;
+    cursor: pointer;
+    line-height: 24px;
   }
 }
 .el-main {
