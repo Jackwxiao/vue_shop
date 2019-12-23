@@ -10,15 +10,17 @@
     <el-container>
       <el-aside width="200px">
         <el-menu background-color="#1E1E2D" text-color="#fff" active-text-color="#ffd04b">
-          <el-submenu index="1">
+          <!-- 一级菜单 -->
+          <el-submenu :index="item.id + ''" v-for="item in menulist" :key="item.id">
             <template slot="title">
-              <i class="el-icon-location"></i>
-              <span>导航一</span>
+              <i :class="iconsObj[item.id]"></i>
+              <span>{{item.authName}}</span>
             </template>
-            <el-menu-item index="1-4-1">
+            <!-- 二级菜单 -->
+            <el-menu-item :index="subItem.id + ''" v-for="subItem in item.children" :key="subItem.id">
               <template slot="title">
-                <i class="el-icon-location"></i>
-                <span>导航一</span>
+                <i class="el-icon-menu"></i>
+                <span>{{subItem.authName}}</span>
               </template>
             </el-menu-item>
           </el-submenu>
@@ -33,7 +35,14 @@
 export default {
   data() {
     return {
-      menulist: []
+      menulist: [],
+      iconsObj: {
+        '125': 'iconfont icon-user1',
+        '103': 'iconfont icon-permission',
+        '101': 'iconfont icon-shangpinguanli',
+        '102': 'iconfont icon-dingdan',
+        '145': 'iconfont icon-shuju'
+      }
     }
   },
   created(){
@@ -86,5 +95,8 @@ export default {
 }
 .el-main {
   background-color: #f2f3f8;
+}
+.iconfont{
+  margin-right: 10px;
 }
 </style>
