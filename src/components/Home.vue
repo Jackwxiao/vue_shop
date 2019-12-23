@@ -13,7 +13,7 @@
           <i class="iconfont icon-menu"></i>
         </div>
         <el-menu background-color="#1E1E2D" text-color="#fff" active-text-color="#ffd04b"
-        unique-opened :collapse="isCollapse" :collapse-transition="false">
+        unique-opened :collapse="isCollapse" :collapse-transition="false" router>
           <!-- 一级菜单 -->
           <el-submenu :index="item.id + ''" v-for="item in menulist" :key="item.id">
             <template slot="title">
@@ -21,7 +21,7 @@
               <span>{{item.authName}}</span>
             </template>
             <!-- 二级菜单 -->
-            <el-menu-item :index="subItem.id + ''" v-for="subItem in item.children" :key="subItem.id">
+            <el-menu-item :index="'/' + subItem.path" v-for="subItem in item.children" :key="subItem.id">
               <template slot="title">
                 <i class="el-icon-menu"></i>
                 <span>{{subItem.authName}}</span>
