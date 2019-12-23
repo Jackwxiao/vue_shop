@@ -14,6 +14,7 @@
         </div>
         <el-menu background-color="#1E1E2D" text-color="#fff" active-text-color="#ffd04b"
         unique-opened :collapse="isCollapse" :collapse-transition="false" router>
+        <!-- 启用vue-router模式会在激活导航时以 index 作为 path 进行路由跳转 -->
           <!-- 一级菜单 -->
           <el-submenu :index="item.id + ''" v-for="item in menulist" :key="item.id">
             <template slot="title">
