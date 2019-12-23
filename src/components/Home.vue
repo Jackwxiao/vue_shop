@@ -82,7 +82,9 @@ export default {
       this.isCollapse = !this.isCollapse
     },
     saveActivePath(activePath){
+      // 保存激活路径到sessionStorage中
       window.sessionStorage.setItem('activePath', activePath)
+      // 重新赋值
       this.activePath = activePath
     }
   }
