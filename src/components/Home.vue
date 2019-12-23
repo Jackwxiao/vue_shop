@@ -13,7 +13,8 @@
           <i class="iconfont icon-menu"></i>
         </div>
         <el-menu background-color="#1E1E2D" text-color="#fff" active-text-color="#ffd04b"
-        unique-opened :collapse="isCollapse" :collapse-transition="false" router>
+        unique-opened :collapse="isCollapse" :collapse-transition="false"
+        router :default-active="activePath">
         <!-- 启用vue-router模式会在激活导航时以 index 作为 path 进行路由跳转 -->
           <!-- 一级菜单 -->
           <el-submenu :index="item.id + ''" v-for="item in menulist" :key="item.id">
@@ -22,7 +23,8 @@
               <span>{{item.authName}}</span>
             </template>
             <!-- 二级菜单 -->
-            <el-menu-item :index="'/' + subItem.path" v-for="subItem in item.children" :key="subItem.id">
+            <el-menu-item :index="'/' + subItem.path" v-for="subItem in item.children"
+            :key="subItem.id" @click="saveActivePath('/' + subItem.path)">
               <template slot="title">
                 <i class="el-icon-menu"></i>
                 <span>{{subItem.authName}}</span>
@@ -52,11 +54,14 @@ export default {
         '145': 'iconfont icon-shuju'
       },
       // 侧边栏是否可折叠展开
-      isCollapse: false
+      isCollapse: false,
+      // 被激活的链接地址
+      activePath: ''
     }
   },
   created(){
     this.getMenuList()
+    this.activePath = window.sessionStorage.getItem('activePath')
   },
   methods: {
     logout() {
@@ -75,6 +80,10 @@ export default {
     // 点击按钮切换折叠与展开
     collapse(){
       this.isCollapse = !this.isCollapse
+    },
+    saveActivePath(activePath){
+      window.sessionStorage.setItem('activePath', activePath)
+      this.activePath = activePath
     }
   }
 }
