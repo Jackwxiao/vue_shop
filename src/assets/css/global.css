@@ -15,3 +15,6 @@ body,
 .el-card{
     box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5) !important;
 }
+.el-table{
+    margin-top: 20px;;
+}
