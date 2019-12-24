@@ -24,7 +24,7 @@
         <el-table-column label="角色" prop="role_name"></el-table-column>
         <el-table-column label="状态">
           <template slot-scope="scope">
-            <el-switch v-model="scope.row.mg_state"></el-switch>
+            <el-switch v-model="scope.row.mg_state" @change="userStateChange(scope.row)"></el-switch>
           </template>
         </el-table-column>
         <el-table-column label="操作" width="180px">
@@ -42,14 +42,14 @@
         </el-table-column>
       </el-table>
       <el-pagination
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-      :current-page="pagenum"
-      :page-sizes="[1, 2, 5, 10]"
-      :page-size="pagesize"
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="total">
-    </el-pagination>
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="pagenum"
+        :page-sizes="[1, 2, 5, 10]"
+        :page-size="pagesize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total"
+      ></el-pagination>
     </el-card>
   </div>
 </template>
@@ -84,15 +84,24 @@ export default {
       this.total = res.data.total
       console.log(res)
     },
-    handleSizeChange(newSize){
-        // console.log(newSize)
-        this.queryInfo.pagesize = newSize
-        this.getUserList()
+    handleSizeChange(newSize) {
+      // console.log(newSize)
+      this.queryInfo.pagesize = newSize
+      this.getUserList()
     },
-    handleCurrentChange(newPage){
-        // console.log(newPage)
-        this.queryInfo.pagenum = newPage
-        this.getUserList()
+    handleCurrentChange(newPage) {
+      // console.log(newPage)
+      this.queryInfo.pagenum = newPage
+      this.getUserList()
+    },
+    // 监听switch 开关状态
+    async userStateChange(userInfo){
+       const { data: res } = await this.$http.put(`users/${userInfo.id}/state/${userInfo.mg_state}`)
+       if (res.meta.status !== 200) {
+           userInfo.mg_state = !userInfo.mg_state
+           return this.$message.error('更新失败！')
+       }
+       this.$message.success('更新成功！')
     }
   }
 }
