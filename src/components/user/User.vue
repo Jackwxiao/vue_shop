@@ -32,17 +32,24 @@
             <el-tooltip effect="dark" content="编辑" placement="top" :enterable="false">
               <el-button type="primary" icon="el-icon-edit" size="mini"></el-button>
             </el-tooltip>
-
             <el-tooltip effect="dark" content="删除" placement="top" :enterable="false">
               <el-button type="danger" icon="el-icon-delete" size="mini"></el-button>
             </el-tooltip>
-
             <el-tooltip effect="dark" content="角色分配" placement="top" :enterable="false">
               <el-button type="warning" icon="el-icon-setting" size="mini"></el-button>
             </el-tooltip>
           </template>
         </el-table-column>
       </el-table>
+      <el-pagination
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="pagenum"
+      :page-sizes="[1, 2, 5, 10]"
+      :page-size="pagesize"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total">
+    </el-pagination>
     </el-card>
   </div>
 </template>
@@ -76,6 +83,16 @@ export default {
       this.userlist = res.data.users
       this.total = res.data.total
       console.log(res)
+    },
+    handleSizeChange(newSize){
+        // console.log(newSize)
+        this.queryInfo.pagesize = newSize
+        this.getUserList()
+    },
+    handleCurrentChange(newPage){
+        // console.log(newPage)
+        this.queryInfo.pagenum = newPage
+        this.getUserList()
     }
   }
 }
