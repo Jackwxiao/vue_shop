@@ -33,7 +33,7 @@
               <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditDialog(scope.row.id)"></el-button>
             </el-tooltip>
             <el-tooltip effect="dark" content="删除" placement="top" :enterable="false">
-              <el-button type="danger" icon="el-icon-delete" size="mini"></el-button>
+              <el-button type="danger" icon="el-icon-delete" size="mini" @click="removeUserById('scope.row.id')"></el-button>
             </el-tooltip>
             <el-tooltip effect="dark" content="角色分配" placement="top" :enterable="false">
               <el-button type="warning" icon="el-icon-setting" size="mini"></el-button>
@@ -243,6 +243,27 @@ export default {
            this.getUserList()
            this.$message.success('更新成功！')
         })
+    },
+    async removeUserById(id){
+        const confirmResult = await this.$confirm('将永久删除该用户，是否继续操作？',
+        '提示',
+        {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+        }
+        ).catch(err => err)
+        // 确认删除则返回字符串 confirm
+        // 取消删除则返回字符串 cancel
+        if (confirmResult !== 'confirm') {
+            return this.$message.info('取消删除')
+        }
+        const { data: res } = await this.$http.delete('users/' + id)
+        if (res.meta.status !== 200){
+            return this.$message.error('删除用户失败！')
+        }
+        this.$message.success('删除用户成功！')
+        this.getUserList()
     }
   }
 }
