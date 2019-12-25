@@ -28,9 +28,9 @@
           </template>
         </el-table-column>
         <el-table-column label="操作" width="180px">
-          <template>
+          <template slot-scope="scope">
             <el-tooltip effect="dark" content="编辑" placement="top" :enterable="false">
-              <el-button type="primary" icon="el-icon-edit" size="mini"></el-button>
+              <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditDialog(scope.row.id)"></el-button>
             </el-tooltip>
             <el-tooltip effect="dark" content="删除" placement="top" :enterable="false">
               <el-button type="danger" icon="el-icon-delete" size="mini"></el-button>
@@ -72,6 +72,24 @@
         <el-button type="primary" @click="addUser">确 定</el-button>
       </span>
     </el-dialog>
+    <!-- 修改用户信息对话框 -->
+    <el-dialog title="修改用户信息" :visible.sync="editDialogVisible" width="50%">
+      <el-form :model="editForm" :rules="addFormRules" ref="editFormRef" label-width="70px">
+        <el-form-item label="用户名">
+          <el-input v-model="editForm.username" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱" prop="email">
+          <el-input v-model="editForm.email"></el-input>
+        </el-form-item>
+        <el-form-item label="电话" prop="mobile">
+          <el-input v-model="editForm.mobile"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addUser">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -103,7 +121,7 @@ export default {
       },
       userlist: [],
       total: 0,
-      dialogVisible: false, // 对话框的显示
+      dialogVisible: false, // 对话框的显示与否
       // 添加用户的表单数据
       addForm: {
         username: '',
@@ -139,7 +157,10 @@ export default {
           { required: true, message: '请输入常用电话号码', trigger: 'blur' },
           { validator: checkMobile, trigger: 'blur' }
         ]
-      }
+      },
+      editDialogVisible: false, // 编辑用户对话框的显示与否
+      // 查询到的用户信息
+      editForm: {}
     }
   },
   created() {
@@ -195,6 +216,14 @@ export default {
            this.dialogVisible = false
            this.getUserList()
         })
+    },
+    async showEditDialog(id) {
+        const { data: res } = await this.$http.get('users/' + id)
+        if (res.meta.status !== 200) {
+            return this.$message.error('查询用户信息失败')
+        }
+        this.editForm = res.data
+        this.editDialogVisible = true
     }
   }
 }
