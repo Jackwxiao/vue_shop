@@ -52,7 +52,7 @@
       ></el-pagination>
     </el-card>
     <!-- 添加用户对话框 -->
-    <el-dialog title="添加用户" :visible.sync="dialogVisible" width="50%">
+    <el-dialog title="添加用户" :visible.sync="dialogVisible" width="50%" @close="closeResetDialog">
       <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="70px">
         <el-form-item label="用户名" prop="username">
           <el-input v-model="addForm.username"></el-input>
@@ -69,7 +69,7 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+        <el-button type="primary" @click="addUser">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -180,6 +180,21 @@ export default {
     },
     addDialog() {
       this.dialogVisible = !this.dialogVisible
+    },
+    closeResetDialog() {
+      this.$refs.addFormRef.resetFields()
+    },
+    addUser() {
+        this.$refs.addFormRef.validate(async valid => {
+            if (!valid) return
+           const { data: res } = await this.$http.post('users', this.addForm)
+           if (res.meta.status !== 201) {
+               this.$message.error('添加用户失败！')
+           }
+           this.$message.success('添加用户成功！')
+           this.dialogVisible = false
+           this.getUserList()
+        })
     }
   }
 }
