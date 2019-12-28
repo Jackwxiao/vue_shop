@@ -15,7 +15,7 @@
         <el-table-column type="expand">
           <template slot-scope="scope">
             <el-row
-              :class="['borderBottom', i1  === 0 ? 'borderTop' : '']"
+              :class="['borderBottom', i1  === 0 ? 'borderTop' : '', 'vcenter']"
               v-for="(item1, i1) in scope.row.children"
               :key="item1.id"
             >
@@ -25,7 +25,7 @@
               </el-col>
               <el-col :span="19">
                 <el-row
-                  :class="[i2 === 0 ? '': 'borderTop']"
+                  :class="[i2 === 0 ? '': 'borderTop', 'vcenter']"
                   v-for="(item2, i2) in item1.children"
                   :key="item2.id"
                 >
@@ -224,5 +224,9 @@ export default {
 }
 .borderBottom {
   border-bottom: 1px solid #eee;
+}
+.vcenter{
+    display: flex;
+    align-items: center;
 }
 </style>
