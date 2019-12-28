@@ -20,7 +20,11 @@
               :key="item1.id"
             >
               <el-col :span="5">
-                <el-tag type="success">{{item1.authName}}</el-tag>
+                <el-tag
+                  closable
+                  @close="removeById(scope.row, item1.id)"
+                  type="success"
+                >{{item1.authName}}</el-tag>
                 <i class="el-icon-caret-right"></i>
               </el-col>
               <el-col :span="19">
@@ -30,13 +34,17 @@
                   :key="item2.id"
                 >
                   <el-col :span="6">
-                    <el-tag>{{item2.authName}}</el-tag>
+                    <el-tag closable @close="removeById(scope.row, item2.id)">{{item2.authName}}</el-tag>
                     <i class="el-icon-caret-right"></i>
                   </el-col>
                   <el-col :span="18">
-                      <el-tag type="warning" v-for="(item3) in item2.children" :key="item3.id">
-                          {{item3.authName}}
-                      </el-tag>
+                    <el-tag
+                      closable
+                      @close="removeById(scope.row, item3.id)"
+                      type="warning"
+                      v-for="(item3) in item2.children"
+                      :key="item3.id"
+                    >{{item3.authName}}</el-tag>
                   </el-col>
                 </el-row>
               </el-col>
@@ -210,6 +218,26 @@ export default {
       }
       this.$message.success('删除成功！')
       this.getRolesList()
+    },
+    // 根据id 移除对应的权限
+    async removeById(role, rightId) {
+      const confirmResult = await this.$confirm(
+        '将永久删除此项，是否继续操作？',
+        '温馨提示',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }
+      ).catch(err => err)
+      if (confirmResult !== 'confirm') {
+        return this.$message.info('您取消了删除！')
+      }
+      const { data: res } = await this.$http.delete(`roles/${role.id}/rights/${rightId}`)
+      if (res.meta.status !== 200) {
+          return this.$message.error('删除权限失败！')
+      }
+      role.children = res.data
     }
   }
 }
@@ -225,8 +253,8 @@ export default {
 .borderBottom {
   border-bottom: 1px solid #eee;
 }
-.vcenter{
-    display: flex;
-    align-items: center;
+.vcenter {
+  display: flex;
+  align-items: center;
 }
 </style>
