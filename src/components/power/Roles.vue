@@ -68,7 +68,12 @@
               icon="el-icon-delete"
               @click="removeRoleByRoleId(scope.row.id)"
             >删除</el-button>
-            <el-button size="mini" type="warning" icon="el-icon-setting">分配角色</el-button>
+            <el-button
+              size="mini"
+              type="warning"
+              icon="el-icon-setting"
+              @click="showSetRightsDialog"
+            >分配权限</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -118,6 +123,14 @@
         <el-button type="primary" @click="editRolesInfo">确 定</el-button>
       </span>
     </el-dialog>
+    <!-- 分配权限对话框 -->
+    <el-dialog title="分配权限" :visible.sync="setRightsDialogVisible" width="50%">
+      <el-tree :data="rightsList" :props="treeProps"></el-tree>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="setRightsDialogVisible = false">取 消</el-button>
+        <el-button type="primary">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -138,7 +151,15 @@ export default {
         roleDesc: [{ required: true, message: '请输入角色名', trigger: 'blur' }]
       },
       editRolesDialogVisible: false,
-      editRolesForm: {}
+      editRolesForm: {},
+      // 分配权限对话框的显示
+      setRightsDialogVisible: false,
+      rightsList: [],
+      // 树形控件的属性绑定对象
+      treeProps: {
+          children: 'children',
+          label: 'authName'
+      }
     }
   },
   created() {
@@ -233,11 +254,22 @@ export default {
       if (confirmResult !== 'confirm') {
         return this.$message.info('您取消了删除！')
       }
-      const { data: res } = await this.$http.delete(`roles/${role.id}/rights/${rightId}`)
+      const { data: res } = await this.$http.delete(
+        `roles/${role.id}/rights/${rightId}`
+      )
       if (res.meta.status !== 200) {
-          return this.$message.error('删除权限失败！')
+        return this.$message.error('删除权限失败！')
       }
       role.children = res.data
+    },
+    async showSetRightsDialog() {
+      const { data: res } = await this.$http.get('rights/tree')
+      if (res.meta.status !== 200) {
+          return this.$message.error('获取权限列表失败！')
+      }
+      // 把获取到的权限数据放到rightsList中
+      this.rightsList = res.data
+      this.setRightsDialogVisible = true
     }
   }
 }
