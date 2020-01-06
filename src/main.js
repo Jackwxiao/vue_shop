@@ -5,6 +5,9 @@ import './plugins/element.js'
 import './assets/css/global.css'
 import './assets/css/icon.css'
 import axios from 'axios'
+import ZkTable from 'vue-table-with-tree-grid'
+
+Vue.component('tree-table', ZkTable)
 
 axios.defaults.baseURL = 'http://127.0.0.1:8888/api/private/v1/'
 axios.interceptors.request.use(config => {
