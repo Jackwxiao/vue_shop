@@ -12,7 +12,21 @@
         </el-col>
       </el-row>
     </el-card>
-    <tree-table border index-text="#" show-index :expand-type="false" :selection-type="false" show-row-hover :data="cateList" :columns="columns"></tree-table>
+    <tree-table
+      border
+      index-text="#"
+      show-index
+      :expand-type="false"
+      :selection-type="false"
+      show-row-hover
+      :data="cateList"
+      :columns="columns"
+    >
+    <template slot="istrue" scope="scope">
+        <i class="el-icon-success" v-if="scope.row.cat_deleted === false" style="color: lightgreen;"></i>
+        <i class="el-icon-error" v-else style="color: red;"></i>
+    </template>
+    </tree-table>
   </div>
 </template>
 <script>
@@ -32,6 +46,11 @@ export default {
         {
           label: '类名',
           prop: 'cat_name'
+        },
+        {
+            label: '是否有效',
+            type: 'template',
+            template: 'istrue'
         }
       ]
     }
