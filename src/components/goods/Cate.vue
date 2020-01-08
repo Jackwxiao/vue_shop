@@ -55,14 +55,14 @@
       :total="total"
     ></el-pagination>
     <!-- 添加分类的对话框 -->
-    <el-dialog title="添加商品分类" :visible.sync="addCateDialogVisible" width="50%">
+    <el-dialog title="添加商品分类" :visible.sync="addCateDialogVisible" width="50%" @close="closeReset">
       <el-form :model="addCate" :rules="addCateRules" ref="addCateRef" label-width="100px">
         <el-form-item label="商品类名" prop="cat_name">
           <el-input v-model="addCate.cat_name"></el-input>
         </el-form-item>
         <el-form-item label="父级分类">
           <el-cascader
-           expandTrigger="hover"
+            expandTrigger="hover"
             v-model="selectedKeys"
             :options="parentCateList"
             :props="cascaderProps"
@@ -72,6 +72,10 @@
           ></el-cascader>
         </el-form-item>
       </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="addCateDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addCateSub">确 定</el-button>
+      </span>
     </el-dialog>
   </div>
 </template>
@@ -128,9 +132,9 @@ export default {
       parentCateList: [],
       // 级联选择器的配置对象
       cascaderProps: {
-          value: 'cat_id',
-          label: 'cat_name',
-          children: 'children'
+        value: 'cat_id',
+        label: 'cat_name',
+        children: 'children'
       },
       // 选中的父级分类的 id 数组
       selectedKeys: []
@@ -172,17 +176,46 @@ export default {
       console.log(res.data)
       this.parentCateList = res.data
     },
-    parentCateChange(){
-        console.log(this.selectedKeys)
+    parentCateChange() {
+      console.log(this.selectedKeys)
+      // 如果 selectedKeys 数组的长度大于0 ，证明选中了父级分类，反之则反
+      if (this.selectedKeys.length > 0) {
+        // 父级分类的id
+        this.addCate.cat_pid = this.selectedKeys[this.selectedKeys.length - 1]
+        // 给当前分类的等级赋值
+        this.addCate.cat_level = this.selectedKeys.length
+      } else {
+        this.addCate.cat_pid = 0
+        this.addCate.cat_level = 0
+      }
+    },
+    closeReset() {
+      this.$refs.addCateRef.resetFields()
+      this.selectedKeys = []
+      this.addCate.cat_pid = 0
+      this.addCate.cat_level = 0
+    },
+    addCateSub(){
+        this.$refs.addCateRef.validate(async valid => {
+        if (!valid) return
+        const { data: res } = await this.$http.post('categories', this.addCate)
+        if (res.meta.status !== 201) {
+          this.$message.error('添加分类失败！')
+        }
+        this.$message.success('添加分类成功！')
+        this.addCateDialogVisible = false
+        this.getCateList()
+    })
     }
-  }
+}
 }
 </script>
+
 <style lang="less" scoped>
 .table {
   margin-top: 20px;
 }
-.el-cascader{
-    width: 100%;
+.el-cascader {
+  width: 100%;
 }
 </style>
