@@ -21,11 +21,11 @@
         </el-col>
       </el-row>
       <el-tabs v-model="activeName" @tab-click="handleTabClick">
-        <el-tab-pane label="动态参数" name="first">
+        <el-tab-pane label="动态参数" name="many">
           <el-button type="primary" size="mini" :disabled="isBtnDisabled">添加参数</el-button>
         </el-tab-pane>
-        <el-tab-pane label="静态属性" name="second">
-            <el-button type="primary" size="mini" :disabled="isBtnDisabled">添加属性</el-button>
+        <el-tab-pane label="静态属性" name="only">
+          <el-button type="primary" size="mini" :disabled="isBtnDisabled">添加属性</el-button>
         </el-tab-pane>
       </el-tabs>
     </el-card>
@@ -42,7 +42,7 @@ export default {
         children: 'children'
       },
       selectedParamsKeys: [],
-      activeName: 'first'
+      activeName: 'many'
     }
   },
   created() {
@@ -58,22 +58,39 @@ export default {
       console.log(this.paramsList)
     },
     // 级联选择框种选项发生变化会触发此函数
-    handleChange() {
+    async handleChange() {
       if (this.selectedParamsKeys.length !== 3) {
         this.selectedParamsKeys = []
       }
+      // 根据所选的id 获取对应的参数
+      const { data: res } = await this.$http.get(
+        `categories/${this.cateId}/attributes`,
+        {
+          params: { sel: this.activeName }
+        }
+      )
+      if (res.meta.status !== 200) {
+        return this.$message.error('获取参数列表失败！')
+      }
+      console.log(res.data)
     },
-    // tab标签点击事件
+    // tab标签点击事件console.log()
     handleTabClick() {}
   },
   computed: {
-      // 需要按钮被禁用则返回true
-      isBtnDisabled() {
-          if (this.selectedParamsKeys.length !== 3) {
-              return true
-          }
-          return false
+    // 需要按钮被禁用则返回true
+    isBtnDisabled() {
+      if (this.selectedParamsKeys.length !== 3) {
+        return true
       }
+      return false
+    },
+    cateId() {
+      if (this.selectedParamsKeys.length === 3) {
+        return this.selectedParamsKeys[2]
+      }
+      return null
+    }
   }
 }
 </script>
