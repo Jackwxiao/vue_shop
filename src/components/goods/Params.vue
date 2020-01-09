@@ -1,0 +1,87 @@
+<template>
+  <div>
+    <el-breadcrumb separator-class="el-icon-arrow-right">
+      <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
+      <el-breadcrumb-item>商品管理</el-breadcrumb-item>
+      <el-breadcrumb-item>参数列表</el-breadcrumb-item>
+    </el-breadcrumb>
+    <el-card>
+      <el-alert title="注意：" type="warning" description="仅允许修改第三级分类的相关参数！" show-icon></el-alert>
+      <el-row class="cate-row">
+        <el-col>
+          <span class="span">选择商品分类:</span>
+          <el-cascader
+            expand-trigger="hover"
+            v-model="selectedParamsKeys"
+            :options="paramsList"
+            :props="cascaderProps"
+            @change="handleChange"
+            clearable
+          ></el-cascader>
+        </el-col>
+      </el-row>
+      <el-tabs v-model="activeName" @tab-click="handleTabClick">
+        <el-tab-pane label="动态参数" name="first">
+          <el-button type="primary" size="mini" :disabled="isBtnDisabled">添加参数</el-button>
+        </el-tab-pane>
+        <el-tab-pane label="静态属性" name="second">
+            <el-button type="primary" size="mini" :disabled="isBtnDisabled">添加属性</el-button>
+        </el-tab-pane>
+      </el-tabs>
+    </el-card>
+  </div>
+</template>
+<script>
+export default {
+  data() {
+    return {
+      paramsList: [],
+      cascaderProps: {
+        value: 'cat_id',
+        label: 'cat_name',
+        children: 'children'
+      },
+      selectedParamsKeys: [],
+      activeName: 'first'
+    }
+  },
+  created() {
+    this.getParamsList()
+  },
+  methods: {
+    async getParamsList() {
+      const { data: res } = await this.$http.get('categories')
+      if (res.meta.status !== 200) {
+        return this.$message.error('获取参数分类失败！')
+      }
+      this.paramsList = res.data
+      console.log(this.paramsList)
+    },
+    // 级联选择框种选项发生变化会触发此函数
+    handleChange() {
+      if (this.selectedParamsKeys.length !== 3) {
+        this.selectedParamsKeys = []
+      }
+    },
+    // tab标签点击事件
+    handleTabClick() {}
+  },
+  computed: {
+      // 需要按钮被禁用则返回true
+      isBtnDisabled() {
+          if (this.selectedParamsKeys.length !== 3) {
+              return true
+          }
+          return false
+      }
+  }
+}
+</script>
+<style lang="less" scoped>
+.cate-row {
+  margin-top: 15px;
+}
+.span {
+  margin-right: 1em;
+}
+</style>
