@@ -42,7 +42,11 @@ export default {
         children: 'children'
       },
       selectedParamsKeys: [],
-      activeName: 'many'
+      activeName: 'many',
+      // 保存动态参数的数据
+      manyTableData: [],
+      // 保存静态属性的数据
+      onlyTableData: []
     }
   },
   created() {
@@ -59,14 +63,14 @@ export default {
     },
     // 级联选择框种选项发生变化会触发此函数
     handleChange() {
-        this.getParamsData()
+      this.getParamsData()
     },
     // tab标签点击事件console.log()
     handleTabClick() {
-        this.getParamsData()
+      this.getParamsData()
     },
     async getParamsData() {
-        // 选中三级分类
+      // 选中三级分类
       if (this.selectedParamsKeys.length !== 3) {
         this.selectedParamsKeys = []
       }
@@ -81,6 +85,11 @@ export default {
         return this.$message.error('获取参数列表失败！')
       }
       console.log(res.data)
+      if (this.activeName === 'many') {
+        this.manyTableData = res.data
+      } else {
+        this.onlyTableData = res.data
+      }
     }
   },
   computed: {
