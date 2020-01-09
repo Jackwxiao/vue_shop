@@ -58,7 +58,15 @@ export default {
       console.log(this.paramsList)
     },
     // 级联选择框种选项发生变化会触发此函数
-    async handleChange() {
+    handleChange() {
+        this.getParamsData()
+    },
+    // tab标签点击事件console.log()
+    handleTabClick() {
+        this.getParamsData()
+    },
+    async getParamsData() {
+        // 选中三级分类
       if (this.selectedParamsKeys.length !== 3) {
         this.selectedParamsKeys = []
       }
@@ -73,9 +81,7 @@ export default {
         return this.$message.error('获取参数列表失败！')
       }
       console.log(res.data)
-    },
-    // tab标签点击事件console.log()
-    handleTabClick() {}
+    }
   },
   computed: {
     // 需要按钮被禁用则返回true
