@@ -22,7 +22,7 @@
       </el-row>
       <el-tabs v-model="activeName" @tab-click="handleTabClick">
         <el-tab-pane label="动态参数" name="many">
-          <el-button type="primary" size="mini" :disabled="isBtnDisabled">添加参数</el-button>
+          <el-button type="primary" size="mini" :disabled="isBtnDisabled" @click="dialogVisible = true">添加参数</el-button>
           <!-- 动态参数表格 -->
           <el-table :data="manyTableData" border stripe>
             <el-table-column type="expand"></el-table-column>
@@ -37,7 +37,7 @@
           </el-table>
         </el-tab-pane>
         <el-tab-pane label="静态属性" name="only">
-          <el-button type="primary" size="mini" :disabled="isBtnDisabled">添加属性</el-button>
+          <el-button type="primary" size="mini" :disabled="isBtnDisabled" @click="dialogVisible = true">添加属性</el-button>
           <!-- 静态属性表格 -->
           <el-table :data="onlyTableData" border stripe>
             <el-table-column type="expand"></el-table-column>
@@ -53,6 +53,23 @@
         </el-tab-pane>
       </el-tabs>
     </el-card>
+    <!-- 添加参数对话框 -->
+    <el-dialog :title="'添加' + titleText" :visible.sync="dialogVisible" width="50%" @close="closeResetDialog">
+      <el-form
+        :model="addParamsForm"
+        :rules="addParamsFormRules"
+        ref="addParamsFormRef"
+        label-width="80px"
+      >
+        <el-form-item :label="titleText" prop="attr_name">
+          <el-input v-model="addParamsForm.attr_name"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addParams">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -70,7 +87,17 @@ export default {
       // 保存动态参数的数据
       manyTableData: [],
       // 保存静态属性的数据
-      onlyTableData: []
+      onlyTableData: [],
+      dialogVisible: false,
+      // 添加参数/属性的表单数据
+      addParamsForm: {
+          attr_name: ''
+      },
+      addParamsFormRules: {
+          attr_name: [
+               { required: true, message: '请输入参数名', trigger: 'blur' }
+          ]
+      }
     }
   },
   created() {
@@ -114,6 +141,25 @@ export default {
       } else {
         this.onlyTableData = res.data
       }
+    },
+    // 监听对话框的关闭事件
+    closeResetDialog(){
+        this.$refs.addParamsFormRef.resetFields()
+    },
+    addParams() {
+        this.$refs.addParamsFormRef.validate(async valid => {
+            if (!valid) return
+            const { data: res } = await this.$http.post(`categories/${this.cateId}/attributes`, {
+                attr_name: this.addParamsForm.attr_name,
+                attr_sel: this.activeName
+            })
+            if (res.meta.status !== 201) {
+                return this.$message.error('添加参数失败！')
+            }
+            this.$message.success('添加参数成功！')
+            this.dialogVisible = false
+            this.getParamsData()
+        })
     }
   },
   computed: {
@@ -129,6 +175,12 @@ export default {
         return this.selectedParamsKeys[2]
       }
       return null
+    },
+    titleText() {
+        if (this.activeName === 'many') {
+            return '动态参数'
+        }
+        return '静态属性'
     }
   }
 }
