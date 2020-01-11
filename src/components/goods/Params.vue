@@ -22,31 +22,51 @@
       </el-row>
       <el-tabs v-model="activeName" @tab-click="handleTabClick">
         <el-tab-pane label="动态参数" name="many">
-          <el-button type="primary" size="mini" :disabled="isBtnDisabled" @click="dialogVisible = true">添加参数</el-button>
+          <el-button
+            type="primary"
+            size="mini"
+            :disabled="isBtnDisabled"
+            @click="dialogVisible = true"
+          >添加参数</el-button>
           <!-- 动态参数表格 -->
           <el-table :data="manyTableData" border stripe>
             <el-table-column type="expand"></el-table-column>
             <el-table-column type="index"></el-table-column>
             <el-table-column label="参数名称" prop="attr_name"></el-table-column>
             <el-table-column label="操作">
-              <template>
-                <el-button size="mini" type="primary" icon="el-icon-edit">编辑</el-button>
-                <el-button size="mini" type="danger" icon="el-icon-delete">删除</el-button>
+              <template slot-scope="scope">
+                <el-button
+                  size="mini"
+                  type="primary"
+                  icon="el-icon-edit"
+                  @click="showEditDialog(scope.row.attr_id)"
+                >编辑</el-button>
+                <el-button size="mini" type="danger" icon="el-icon-delete" @click="deleteParams(scope.row.attr_id)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
         </el-tab-pane>
         <el-tab-pane label="静态属性" name="only">
-          <el-button type="primary" size="mini" :disabled="isBtnDisabled" @click="dialogVisible = true">添加属性</el-button>
+          <el-button
+            type="primary"
+            size="mini"
+            :disabled="isBtnDisabled"
+            @click="dialogVisible = true"
+          >添加属性</el-button>
           <!-- 静态属性表格 -->
           <el-table :data="onlyTableData" border stripe>
             <el-table-column type="expand"></el-table-column>
             <el-table-column type="index"></el-table-column>
             <el-table-column label="属性名称" prop="attr_name"></el-table-column>
             <el-table-column label="操作">
-              <template>
-                <el-button size="mini" type="primary" icon="el-icon-edit">编辑</el-button>
-                <el-button size="mini" type="danger" icon="el-icon-delete">删除</el-button>
+              <template slot-scope="scope">
+                <el-button
+                  size="mini"
+                  type="primary"
+                  icon="el-icon-edit"
+                  @click="showEditDialog(scope.row.attr_id)"
+                >编辑</el-button>
+                <el-button size="mini" type="danger" icon="el-icon-delete" @click="deleteParams(scope.row.attr_id)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -54,7 +74,12 @@
       </el-tabs>
     </el-card>
     <!-- 添加参数对话框 -->
-    <el-dialog :title="'添加' + titleText" :visible.sync="dialogVisible" width="50%" @close="closeResetDialog">
+    <el-dialog
+      :title="'添加' + titleText"
+      :visible.sync="dialogVisible"
+      width="50%"
+      @close="closeResetDialog"
+    >
       <el-form
         :model="addParamsForm"
         :rules="addParamsFormRules"
@@ -68,6 +93,28 @@
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="addParams">确 定</el-button>
+      </span>
+    </el-dialog>
+    <!-- 修改参数对话框 -->
+    <el-dialog
+      :title="'修改' + titleText"
+      :visible.sync="editDialogVisible"
+      width="50%"
+      @close="editResetDialog"
+    >
+      <el-form
+        :model="editParamsForm"
+        :rules="editParamsFormRules"
+        ref="editParamsFormRef"
+        label-width="80px"
+      >
+        <el-form-item :label="titleText" prop="attr_name">
+          <el-input v-model="editParamsForm.attr_name"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="editParams">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -91,12 +138,22 @@ export default {
       dialogVisible: false,
       // 添加参数/属性的表单数据
       addParamsForm: {
-          attr_name: ''
+        attr_name: ''
       },
       addParamsFormRules: {
-          attr_name: [
-               { required: true, message: '请输入参数名', trigger: 'blur' }
-          ]
+        attr_name: [
+          { required: true, message: '请输入参数名', trigger: 'blur' }
+        ]
+      },
+      // 修改参数的对话框的显示与否
+      editDialogVisible: false,
+      // 修改的表单数据对象
+      editParamsForm: {},
+      // 验证规则
+      editParamsFormRules: {
+        attr_name: [
+          { required: true, message: '请输入参数名', trigger: 'blur' }
+        ]
       }
     }
   },
@@ -143,23 +200,83 @@ export default {
       }
     },
     // 监听对话框的关闭事件
-    closeResetDialog(){
-        this.$refs.addParamsFormRef.resetFields()
+    closeResetDialog() {
+      this.$refs.addParamsFormRef.resetFields()
     },
     addParams() {
-        this.$refs.addParamsFormRef.validate(async valid => {
-            if (!valid) return
-            const { data: res } = await this.$http.post(`categories/${this.cateId}/attributes`, {
-                attr_name: this.addParamsForm.attr_name,
-                attr_sel: this.activeName
-            })
-            if (res.meta.status !== 201) {
-                return this.$message.error('添加参数失败！')
-            }
-            this.$message.success('添加参数成功！')
-            this.dialogVisible = false
-            this.getParamsData()
+      this.$refs.addParamsFormRef.validate(async valid => {
+        if (!valid) return
+        const { data: res } = await this.$http.post(
+          `categories/${this.cateId}/attributes`,
+          {
+            attr_name: this.addParamsForm.attr_name,
+            attr_sel: this.activeName
+          }
+        )
+        if (res.meta.status !== 201) {
+          return this.$message.error('添加参数失败！')
+        }
+        this.$message.success('添加参数成功！')
+        this.dialogVisible = false
+        this.getParamsData()
+      })
+    },
+    // 点击按钮，展示修改参数的对话框
+    async showEditDialog(attrId) {
+      this.editDialogVisible = true
+      // 查询当前参数信息
+      const { data: res } = await this.$http.get(
+        `categories/${this.cateId}/attributes/${attrId}`,
+        {
+          params: { attr_sel: this.activeName }
+        }
+      )
+      if (res.meta.status !== 200) {
+        return this.$message.error('获取失败！')
+      }
+      this.editParamsForm = res.data
+    },
+    // 重置修改的表单
+    editResetDialog() {
+      this.$refs.editParamsFormRef.resetFields()
+    },
+    // 点击按钮修改参数信息
+    editParams() {
+      this.$refs.editParamsFormRef.validate(async valid => {
+        if (!valid) return
+        const { data: res } = await this.$http.put(`categories/${this.cateId}/attributes/${this.editParamsForm.attr_id}`, {
+          attr_name: this.editParamsForm.attr_name,
+          attr_sel: this.activeName
         })
+        console.log(1)
+        if (res.meta.status !== 200) {
+          return this.$message.error('修改信息失败！')
+        }
+        console.log(2)
+        this.$message.success('修改成功！')
+        this.getParamsData()
+        this.editDialogVisible = false
+      })
+    },
+    async deleteParams(attrId) {
+      const confirmResult = await this.$confirm(
+        '将永久删除此项，是否继续操作？',
+        '温馨提示',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }
+      ).catch(err => err)
+      if (confirmResult !== 'confirm') {
+        return this.$message.info('已取消删除！')
+      }
+     const { data: res } = await this.$http.delete(`categories/${this.cateId}/attributes/${attrId}`)
+      if (res.meta.status !== 200) {
+        return this.$message.error('删除失败！')
+      }
+      this.$message.success('删除成功！')
+      this.getParamsData()
     }
   },
   computed: {
@@ -177,10 +294,10 @@ export default {
       return null
     },
     titleText() {
-        if (this.activeName === 'many') {
-            return '动态参数'
-        }
-        return '静态属性'
+      if (this.activeName === 'many') {
+        return '动态参数'
+      }
+      return '静态属性'
     }
   }
 }
