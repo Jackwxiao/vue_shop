@@ -339,6 +339,10 @@ export default {
     // 点击按钮显示输入文本框
     showInput(row) {
       row.inputVisible = true
+      // 文本框自动获取焦点，nextTick:页面重新渲染后再调用回调函数里面的代码获取焦点
+      this.$nextTick(_ => {
+          this.$refs.saveTagInput.$refs.input.focus()
+        })
     }
   },
   computed: {
