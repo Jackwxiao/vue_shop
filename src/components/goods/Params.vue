@@ -37,15 +37,15 @@
                 <!-- 添加tag文本编辑 -->
                 <el-input
                   class="input-new-tag"
-                  v-if="inputVisible"
-                  v-model="inputValue"
+                  v-if="scope.row.inputVisible"
+                  v-model="scope.row.inputValue"
                   ref="saveTagInput"
                   size="small"
                   @keyup.enter.native="handleInputConfirm"
                   @blur="handleInputConfirm"
                 ></el-input>
                 <!--切换的 button  -->
-                <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
+                <el-button v-else class="button-new-tag" size="small" @click="showInput(scope.row)">+ New Tag</el-button>
               </template>
             </el-table-column>
             <el-table-column type="index"></el-table-column>
@@ -200,9 +200,7 @@ export default {
         attr_name: [
           { required: true, message: '请输入参数名', trigger: 'blur' }
         ]
-      },
-      inputVisible: false,
-      inputValue: ''
+      }
     }
   },
   created() {
@@ -242,6 +240,10 @@ export default {
       }
       res.data.forEach(item => {
         item.attr_vals = item.attr_vals ? (item.attr_vals || '').split(' ') : []
+        // 控制文本框的显示与否
+        item.inputVisible = false
+        // 文本框中输入的值
+        item.inputValue = ''
       })
       console.log(res.data)
       if (this.activeName === 'many') {
@@ -335,8 +337,8 @@ export default {
     // 文本框失去焦点或按enter键触发
     handleInputConfirm() {},
     // 点击按钮显示输入文本框
-    showInput() {
-      this.inputVisible = true
+    showInput(row) {
+      row.inputVisible = true
     }
   },
   computed: {
