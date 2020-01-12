@@ -91,19 +91,29 @@
             <el-table-column type="expand">
               <template scope="scope">
                 <!-- 循环渲染tag标签 -->
-                <el-tag v-for="(item, i) in scope.row.attr_vals" :key="i" closable>{{item}}</el-tag>
+                <el-tag
+                  v-for="(item, i) in scope.row.attr_vals"
+                  :key="i"
+                  closable
+                  @close="handlerClose(i, scope.row)"
+                >{{item}}</el-tag>
                 <!-- 添加tag文本编辑 -->
                 <el-input
                   class="input-new-tag"
-                  v-if="inputVisible"
-                  v-model="inputValue"
+                  v-if="scope.row.inputVisible"
+                  v-model="scope.row.inputValue"
                   ref="saveTagInput"
                   size="small"
-                  @keyup.enter.native="handleInputConfirm"
-                  @blur="handleInputConfirm"
+                  @keyup.enter.native="handleInputConfirm(scope.row)"
+                  @blur="handleInputConfirm(scope.row)"
                 ></el-input>
                 <!--切换的 button  -->
-                <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
+                <el-button
+                  v-else
+                  class="button-new-tag"
+                  size="small"
+                  @click="showInput(scope.row)"
+                >+ New Tag</el-button>
               </template>
             </el-table-column>
             <!-- 索引列 -->
@@ -237,6 +247,8 @@ export default {
       // 选中三级分类
       if (this.selectedParamsKeys.length !== 3) {
         this.selectedParamsKeys = []
+        this.manyTableData = []
+        this.onlyTableData = []
       }
       // 根据所选的id 获取对应的参数
       const { data: res } = await this.$http.get(
