@@ -33,7 +33,12 @@
             <el-table-column type="expand">
               <template scope="scope">
                 <!-- 循环渲染tag标签 -->
-                <el-tag v-for="(item, i) in scope.row.attr_vals" :key="i" closable>{{item}}</el-tag>
+                <el-tag
+                  v-for="(item, i) in scope.row.attr_vals"
+                  :key="i"
+                  closable
+                  @close="handlerClose(i, scope.row)"
+                >{{item}}</el-tag>
                 <!-- 添加tag文本编辑 -->
                 <el-input
                   class="input-new-tag"
@@ -41,11 +46,16 @@
                   v-model="scope.row.inputValue"
                   ref="saveTagInput"
                   size="small"
-                  @keyup.enter.native="handleInputConfirm"
-                  @blur="handleInputConfirm"
+                  @keyup.enter.native="handleInputConfirm(scope.row)"
+                  @blur="handleInputConfirm(scope.row)"
                 ></el-input>
                 <!--切换的 button  -->
-                <el-button v-else class="button-new-tag" size="small" @click="showInput(scope.row)">+ New Tag</el-button>
+                <el-button
+                  v-else
+                  class="button-new-tag"
+                  size="small"
+                  @click="showInput(scope.row)"
+                >+ New Tag</el-button>
               </template>
             </el-table-column>
             <el-table-column type="index"></el-table-column>
@@ -335,14 +345,41 @@ export default {
       this.getParamsData()
     },
     // 文本框失去焦点或按enter键触发
-    handleInputConfirm() {},
+    async handleInputConfirm(row) {
+      // 如果输入的内容为空则直接return
+      if (row.inputValue.trim().length === 0) {
+        row.inputValue = ''
+        row.inputVisible = false
+        return
+      }
+      row.attr_vals.push(row.inputValue.trim())
+      row.inputValue = ''
+      row.inputVisible = false
+      // 发请求保存到数据库
+      this.saveAttribute(row)
+    },
     // 点击按钮显示输入文本框
     showInput(row) {
       row.inputVisible = true
       // 文本框自动获取焦点，nextTick:页面重新渲染后再调用回调函数里面的代码获取焦点
       this.$nextTick(_ => {
-          this.$refs.saveTagInput.$refs.input.focus()
-        })
+        this.$refs.saveTagInput.$refs.input.focus()
+      })
+    },
+    async saveAttribute(row) {
+      const { data: res } = await this.$http.put(`categories/${this.cateId}/attributes/${row.attr_id}`, {
+        attr_name: row.attr_name,
+        attr_sel: row.attr_sel,
+        attr_vals: row.attr_vals.join(' ')
+      })
+      if (res.meta.status !== 200) {
+        return this.$message.error('修改参数项失败！')
+      }
+      this.$message.success('修改参数项成功！')
+    },
+    handlerClose(i, row) {
+      row.attr_vals.splice(i, 1)
+      this.saveAttribute(row)
     }
   },
   computed: {
