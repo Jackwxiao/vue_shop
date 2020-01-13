@@ -21,7 +21,37 @@
 </template>
 <script>
 export default {
-  data() {}
+  data() {
+      return {
+          // 查询参数列表
+          queryInfo: {
+              query: '',
+              pagenum: 1,
+              pagesize: 10
+          },
+          // 商品列表
+          goodslist: [],
+          // 商品总数
+          total: 0
+      }
+  },
+  created() {
+      this.getGoodsList()
+  },
+  methods: {
+     async getGoodsList() {
+         const { data: res } = await this.$http.get('goods', {
+              params: this.queryInfo
+          })
+          if (res.meta.status !== 200) {
+              return this.$message.error('获取商品列表失败！')
+          }
+          this.$message.success('获取商品列表成功！')
+          console.log(res.data)
+          this.goodslist = res.data.goods
+          this.total = res.data.total
+      }
+  }
 }
 </script>
 <style lang="less" scoped>
