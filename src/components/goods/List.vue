@@ -16,6 +16,19 @@
             <el-button type="primary">添加商品</el-button>
         </el-col>
       </el-row>
+      <el-table :data="goodslist" border stripe>
+           <el-table-column type="index"></el-table-column>
+           <el-table-column label="商品名称" prop="goods_name"></el-table-column>
+           <el-table-column label="商品价格（元）" prop="goods_price" width="95px"></el-table-column>
+           <el-table-column label="商品重量" prop="goods_weight" width="70px"></el-table-column>
+           <el-table-column label="创建时间" prop="add_time" width="140px"></el-table-column>
+           <el-table-column label="操作" width="130px">
+               <template>
+                   <el-button type="primary" icon="el-icon-edit" size="mini"></el-button>
+                   <el-button type="danger" icon="el-icon-delete" size="mini"></el-button>
+               </template>
+           </el-table-column>
+      </el-table>
     </el-card>
   </div>
 </template>
