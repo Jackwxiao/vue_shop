@@ -23,7 +23,12 @@
         label-width="100px"
         label-position="top"
       >
-        <el-tabs v-model="activeIndex" tab-position="left" :before-leave="beforeLeave">
+        <el-tabs
+          v-model="activeIndex"
+          tab-position="left"
+          :before-leave="beforeLeave"
+          @tab-click="tabClicked"
+        >
           <el-tab-pane label="基本信息" name="0">
             <el-form-item label="商品名称" prop="goods_name">
               <el-input v-model="addGoodsForm.goods_name"></el-input>
@@ -48,7 +53,9 @@
               ></el-cascader>
             </el-form-item>
           </el-tab-pane>
-          <el-tab-pane label="商品参数" name="1">商品参数</el-tab-pane>
+          <el-tab-pane label="商品参数" name="1">
+              <el-form-item :label="item.attr_name" v-for="item in manyTabData" :key="item.attr_id"></el-form-item>
+          </el-tab-pane>
           <el-tab-pane label="商品属性" name="2">商品属性</el-tab-pane>
           <el-tab-pane label="商品图片" name="3">商品图片</el-tab-pane>
           <el-tab-pane label="商品内容" name="4">商品内容</el-tab-pane>
@@ -92,7 +99,8 @@ export default {
         label: 'cat_name',
         value: 'cat_id',
         children: 'children'
-      }
+      },
+      manyTabData: []
     }
   },
   created() {
@@ -120,6 +128,28 @@ export default {
             this.$message.error('请先选择商品分类！')
             return false
         }
+    },
+    async tabClicked() {
+        // 访问的是动态参数面板
+        if (this.activeIndex === '1') {
+        const { data: res } = await this.$http.get(`categories/${this.cateId}/attributes`, { params: {
+            sel: 'many'
+        }
+        })
+        if (res.meta.status !== 200) {
+            return this.$message.error('获取参数失败！')
+        }
+        console.log(res.data)
+        this.manyTabData = res.data
+        }
+    }
+},
+computed: {
+    cateId() {
+        if (this.addGoodsForm.goods_cat.length === 3) {
+            return this.addGoodsForm.goods_cat[2]
+        }
+        return null
     }
 }
 }
