@@ -54,7 +54,12 @@
             </el-form-item>
           </el-tab-pane>
           <el-tab-pane label="商品参数" name="1">
-              <el-form-item :label="item.attr_name" v-for="item in manyTabData" :key="item.attr_id"></el-form-item>
+            <el-form-item :label="item.attr_name" v-for="item in manyTabData" :key="item.attr_id">
+              <!-- 复选框 -->
+              <el-checkbox-group v-model="item.attr_vals">
+                <el-checkbox :label="cb" v-for="(cb, i) in item.attr_vals" :key="i" border></el-checkbox>
+              </el-checkbox-group>
+            </el-form-item>
           </el-tab-pane>
           <el-tab-pane label="商品属性" name="2">商品属性</el-tab-pane>
           <el-tab-pane label="商品图片" name="3">商品图片</el-tab-pane>
@@ -90,7 +95,7 @@ export default {
           { required: true, message: '请输入商品重量', trigger: 'blur' }
         ],
         goods_cat: [
-            { required: true, message: '请选择商品分类', trigger: 'blur' }
+          { required: true, message: '请选择商品分类', trigger: 'blur' }
         ]
       },
       // 商品分类列表console.log(red.data)
@@ -117,41 +122,50 @@ export default {
     },
     // 级联选择器选项变化触发
     handleChange() {
-        console.log(this.addGoodsForm.goods_cat)
+      console.log(this.addGoodsForm.goods_cat)
       // 选中三级分类
       if (this.addGoodsForm.goods_cat.length !== 3) {
         this.addGoodsForm.goods_cat = []
       }
     },
     beforeLeave(activeName, oldActiveName) {
-        if (oldActiveName === '0' && this.addGoodsForm.goods_cat.length !== 3) {
-            this.$message.error('请先选择商品分类！')
-            return false
-        }
+      if (oldActiveName === '0' && this.addGoodsForm.goods_cat.length !== 3) {
+        this.$message.error('请先选择商品分类！')
+        return false
+      }
     },
     async tabClicked() {
-        // 访问的是动态参数面板
-        if (this.activeIndex === '1') {
-        const { data: res } = await this.$http.get(`categories/${this.cateId}/attributes`, { params: {
-            sel: 'many'
-        }
-        })
+      // 访问的是动态参数面板
+      if (this.activeIndex === '1') {
+        const { data: res } = await this.$http.get(
+          `categories/${this.cateId}/attributes`,
+          {
+            params: {
+              sel: 'many'
+            }
+          }
+        )
         if (res.meta.status !== 200) {
-            return this.$message.error('获取参数失败！')
+          return this.$message.error('获取参数失败！')
         }
         console.log(res.data)
+        // 复选框绑定的是数组，此处得到的是字符串，所以要进行如下处理：
+        res.data.forEach(item => {
+          item.attr_vals =
+            item.attr_vals.length === 0 ? [] : item.attr_vals.split(' ')
+        })
         this.manyTabData = res.data
-        }
+      }
     }
-},
-computed: {
+  },
+  computed: {
     cateId() {
-        if (this.addGoodsForm.goods_cat.length === 3) {
-            return this.addGoodsForm.goods_cat[2]
-        }
-        return null
+      if (this.addGoodsForm.goods_cat.length === 3) {
+        return this.addGoodsForm.goods_cat[2]
+      }
+      return null
     }
-}
+  }
 }
 </script>
 <style lang="less" scoped>
