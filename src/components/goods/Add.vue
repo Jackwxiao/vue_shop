@@ -73,6 +73,7 @@
               :on-remove="handleRemove"
               list-type="picture"
               :headers="headerObj"
+              :on-success="handleSuccess"
             >
               <el-button size="small" type="primary">点击上传</el-button>
             </el-upload>
@@ -81,6 +82,14 @@
         </el-tabs>
       </el-form>
     </el-card>
+    <!-- 图片预览对话框 -->
+    <el-dialog
+  title="图片预览"
+  :visible.sync="previewVisible"
+  width="50%"
+  center>
+  <img :src="previewPath" alt="" class="previewImg">
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -93,7 +102,10 @@ export default {
         goods_price: 0,
         goods_number: 0,
         goods_weight: 0,
-        goods_cat: []
+        // 分类数据
+        goods_cat: [],
+        // 上传图片的临时地址
+        pics: []
       },
       addGoodsRules: {
         goods_name: [
@@ -128,7 +140,9 @@ export default {
       // 图片上传的请求头对象
       headerObj: {
           Authorization: window.sessionStorage.getItem('token')
-      }
+      },
+      previewPath: '',
+      previewVisible: false
     }
   },
   created() {
@@ -194,9 +208,30 @@ export default {
       }
     },
     // 处理图片预览
-    handlePreview() {},
+    handlePreview(file) {
+        console.log(file)
+        this.previewPath = file.response.data.url
+        this.previewVisible = true
+    },
     // 处理移除图片的操作
-    handleRemove() {}
+    handleRemove(file) {
+        console.log(file)
+        // 获取将要删除的图片临时路径
+        const filePath = file.response.data.tmp_path
+        // 从pics数组中找到图片的索引值
+        const i = this.addGoodsForm.pics.findIndex(x => x.pic === filePath)
+        // 调用splice方法删除图片
+        this.addGoodsForm.pics.splice(i, 1)
+    },
+    // 处理图片上传成功之后的操作
+    handleSuccess(response) {
+        console.log(response)
+        // 拼接得到一个图片信息对象
+        const picInfo = { pics: response.data.tmp_path }
+        // 将图片信息push到pics数组中
+        this.addGoodsForm.pics.push(picInfo)
+        console.log(this.addGoodsForm)
+    }
   },
   computed: {
     cateId() {
@@ -211,5 +246,8 @@ export default {
 <style lang="less" scoped>
 .el-checkbox {
   margin: 0 10px 0 0 !important;
+}
+.previewImg {
+    width: 100%;
 }
 </style>
