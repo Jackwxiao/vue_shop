@@ -62,11 +62,21 @@
             </el-form-item>
           </el-tab-pane>
           <el-tab-pane label="商品属性" name="2">
-              <el-form-item :label="item.attr_name" v-for="item in onlyTabData" :key="item.attr_id">
-                  <el-input v-model="item.attr_vals"></el-input>
-              </el-form-item>
+            <el-form-item :label="item.attr_name" v-for="item in onlyTabData" :key="item.attr_id">
+              <el-input v-model="item.attr_vals"></el-input>
+            </el-form-item>
           </el-tab-pane>
-          <el-tab-pane label="商品图片" name="3">商品图片</el-tab-pane>
+          <el-tab-pane label="商品图片" name="3">
+            <el-upload
+              :action="uploadURL"
+              :on-preview="handlePreview"
+              :on-remove="handleRemove"
+              list-type="picture"
+              :headers="headerObj"
+            >
+              <el-button size="small" type="primary">点击上传</el-button>
+            </el-upload>
+          </el-tab-pane>
           <el-tab-pane label="商品内容" name="4">商品内容</el-tab-pane>
         </el-tabs>
       </el-form>
@@ -112,7 +122,13 @@ export default {
       // 动态参数数据
       manyTabData: [],
       // 静态属性数据
-      onlyTabData: []
+      onlyTabData: [],
+      // 上传图片的URL地址
+      uploadURL: 'http://127.0.0.1:8888/api/private/v1/upload',
+      // 图片上传的请求头对象
+      headerObj: {
+          Authorization: window.sessionStorage.getItem('token')
+      }
     }
   },
   created() {
@@ -163,7 +179,7 @@ export default {
         })
         this.manyTabData = res.data
       } else if (this.activeIndex === '2') {
-          const { data: res } = await this.$http.get(
+        const { data: res } = await this.$http.get(
           `categories/${this.cateId}/attributes`,
           {
             params: {
@@ -176,7 +192,11 @@ export default {
         }
         this.onlyTabData = res.data
       }
-    }
+    },
+    // 处理图片预览
+    handlePreview() {},
+    // 处理移除图片的操作
+    handleRemove() {}
   },
   computed: {
     cateId() {
@@ -190,6 +210,6 @@ export default {
 </script>
 <style lang="less" scoped>
 .el-checkbox {
-    margin: 0 10px 0 0 !important;
+  margin: 0 10px 0 0 !important;
 }
 </style>
