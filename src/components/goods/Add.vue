@@ -78,7 +78,9 @@
               <el-button size="small" type="primary">点击上传</el-button>
             </el-upload>
           </el-tab-pane>
-          <el-tab-pane label="商品内容" name="4">商品内容</el-tab-pane>
+          <el-tab-pane label="商品内容" name="4">
+              <quill-editor v-model="addGoodsForm.goods_introduce"></quill-editor>
+          </el-tab-pane>
         </el-tabs>
       </el-form>
     </el-card>
@@ -105,7 +107,8 @@ export default {
         // 分类数据
         goods_cat: [],
         // 上传图片的临时地址
-        pics: []
+        pics: [],
+        goods_introduce: ''
       },
       addGoodsRules: {
         goods_name: [
