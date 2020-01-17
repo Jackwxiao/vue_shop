@@ -1,3 +1,3 @@
 <template>
-    <div>Welcome</div>
+    <div>Welcome wx</div>
 </template>

@@ -79,18 +79,16 @@
             </el-upload>
           </el-tab-pane>
           <el-tab-pane label="商品内容" name="4">
-              <quill-editor v-model="addGoodsForm.goods_introduce"></quill-editor>
+            <!-- 富文本编辑器 -->
+            <quill-editor v-model="addGoodsForm.goods_introduce"></quill-editor>
+            <el-button type="primary" class="btnAdd">添加商品</el-button>
           </el-tab-pane>
         </el-tabs>
       </el-form>
     </el-card>
     <!-- 图片预览对话框 -->
-    <el-dialog
-  title="图片预览"
-  :visible.sync="previewVisible"
-  width="50%"
-  center>
-  <img :src="previewPath" alt="" class="previewImg">
+    <el-dialog title="图片预览" :visible.sync="previewVisible" width="50%" center>
+      <img :src="previewPath" alt class="previewImg" />
     </el-dialog>
   </div>
 </template>
@@ -142,7 +140,7 @@ export default {
       uploadURL: 'http://127.0.0.1:8888/api/private/v1/upload',
       // 图片上传的请求头对象
       headerObj: {
-          Authorization: window.sessionStorage.getItem('token')
+        Authorization: window.sessionStorage.getItem('token')
       },
       previewPath: '',
       previewVisible: false
@@ -212,28 +210,28 @@ export default {
     },
     // 处理图片预览
     handlePreview(file) {
-        console.log(file)
-        this.previewPath = file.response.data.url
-        this.previewVisible = true
+      console.log(file)
+      this.previewPath = file.response.data.url
+      this.previewVisible = true
     },
     // 处理移除图片的操作
     handleRemove(file) {
-        console.log(file)
-        // 获取将要删除的图片临时路径
-        const filePath = file.response.data.tmp_path
-        // 从pics数组中找到图片的索引值
-        const i = this.addGoodsForm.pics.findIndex(x => x.pic === filePath)
-        // 调用splice方法删除图片
-        this.addGoodsForm.pics.splice(i, 1)
+      console.log(file)
+      // 获取将要删除的图片临时路径
+      const filePath = file.response.data.tmp_path
+      // 从pics数组中找到图片的索引值
+      const i = this.addGoodsForm.pics.findIndex(x => x.pic === filePath)
+      // 调用splice方法删除图片
+      this.addGoodsForm.pics.splice(i, 1)
     },
     // 处理图片上传成功之后的操作
     handleSuccess(response) {
-        console.log(response)
-        // 拼接得到一个图片信息对象
-        const picInfo = { pics: response.data.tmp_path }
-        // 将图片信息push到pics数组中
-        this.addGoodsForm.pics.push(picInfo)
-        console.log(this.addGoodsForm)
+      console.log(response)
+      // 拼接得到一个图片信息对象
+      const picInfo = { pics: response.data.tmp_path }
+      // 将图片信息push到pics数组中
+      this.addGoodsForm.pics.push(picInfo)
+      console.log(this.addGoodsForm)
     }
   },
   computed: {
@@ -251,6 +249,9 @@ export default {
   margin: 0 10px 0 0 !important;
 }
 .previewImg {
-    width: 100%;
+  width: 100%;
+}
+.btnAdd {
+  margin-top: 15px;
 }
 </style>
