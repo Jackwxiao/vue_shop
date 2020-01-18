@@ -93,6 +93,8 @@
   </div>
 </template>
 <script>
+import _ from 'lodash'
+
 export default {
   data() {
     return {
@@ -238,6 +240,10 @@ export default {
         if (!valid) {
           return this.$message.error('请先填写必填项！')
         }
+        // 执行添加业务逻辑
+        const form = _.cloneDeep(this.addGoodsForm)
+        form.goods_cat = form.goods_cat.join(',')
+        console.log(form)
       })
     }
   },
