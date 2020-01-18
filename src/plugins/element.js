@@ -5,7 +5,11 @@ import {
     MenuItemGroup, MenuItem, Breadcrumb, BreadcrumbItem,
     Card, Row, Col, Table, TableColumn, Switch, Tooltip, Pagination, Dialog,
     MessageBox, Tag, Tree, Select, Option, Cascader, Alert, Tabs, TabPane,
+<<<<<<< HEAD
     Steps, Step, CheckboxGroup, Checkbox, Upload
+=======
+    Step, Steps, CheckboxGroup, Checkbox, Upload
+>>>>>>> goods_list
 } from 'element-ui'
 
 Vue.use(Button)
