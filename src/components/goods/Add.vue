@@ -237,7 +237,7 @@ export default {
       console.log(this.addGoodsForm)
     },
     add() {
-      this.$refs.addGoodsRef.validate(valid => {
+      this.$refs.addGoodsRef.validate(async valid => {
         if (!valid) {
           return this.$message.error('请先填写必填项！')
         }
@@ -257,6 +257,13 @@ export default {
         })
         form.attrs = this.addGoodsForm.attrs
         console.log(form)
+        // 发起请求，添加商品，商品名称必须是唯一的
+        const { data: res } = await this.$http.post('goods', form)
+        if (res.meta.status !== 201) {
+          return this.$message.error('添加商品失败！')
+        }
+        this.$message.success('添加商品成功！')
+        this.$router.push('/goods')
       })
     }
   },
