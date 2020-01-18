@@ -108,7 +108,8 @@ export default {
         goods_cat: [],
         // 上传图片的临时地址
         pics: [],
-        goods_introduce: ''
+        goods_introduce: '',
+        attrs: []
       },
       addGoodsRules: {
         goods_name: [
@@ -243,6 +244,18 @@ export default {
         // 执行添加业务逻辑
         const form = _.cloneDeep(this.addGoodsForm)
         form.goods_cat = form.goods_cat.join(',')
+        // 处理动态参数
+        this.manyTabData.forEach(item => {
+          const newInfo = { attr_id: item.attr_id, attr_value: item.attr_vals.join(' ')
+          }
+          this.addGoodsForm.attrs.push(newInfo)
+        })
+        // 处理静态属性
+        this.onlyTabData.forEach(item => {
+          const newInfo = { attr_id: item.attr_id, attr_value: item.attr_vals }
+          this.addGoodsForm.attrs.push(newInfo)
+        })
+        form.attrs = this.addGoodsForm.attrs
         console.log(form)
       })
     }
